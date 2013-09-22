@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="{{ static_url("lib/jquery.js") }}"></script>
+    <script type="text/javascript" src="{{ static_url("lib/underscore.js") }}"></script>
+    <script type="text/javascript" src="{{ static_url("lib/backbone.js") }}"></script>
+    <script type="text/javascript">
+      Person = Backbone.Model.extend({
+
+        defaults:{
+          name : 'Fetus',
+          age : '',
+        },
+        initialize: function(){
+          //alert("Welcome to this world");
+        }
+
+      });
+
+      var person = new Person({ name: "Thomas", age: 67 });
+
+      /*var person = new Person();
+      person.set({ name: "Thomas", age: 67 });*/
+      var age = person.get('age');
+      var name = person.get('name');
+      var child = person.get('child');
+
+
+    </script>
+  </head>
+  <body>
+    
+  </body>
+</html>
