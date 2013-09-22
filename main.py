@@ -18,6 +18,7 @@ def load_model(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         #setattr(self, 'session', "session")
+        print "revice args {0} kwargs {1}".format(args, kwargs)
         model_class = "model.{0}".format(args[0])
         try:
             model = import_object(model_class)
@@ -29,30 +30,21 @@ def load_model(func):
             raise tornado.web.HTTPError(404)
         print 'revice request args: {0} kwargs: {1}'.format(args, kwargs)
         return func(self, *args, **kwargs)
-
-    return wrapper
-
-def load_obj_model(func):
-    """注入一个Model参数给函数."""
-    @functools.wraps(func)
-    def wrapper(self, *args, **kwargs):
-        #setattr(self, 'session', "session")
-        print "rescive args [{0}] kwargs [{1}]".format(args, kwargs)
-        model_class = "model.{0}".format(args[0])
-        try:
-            model = import_object(model_class)
-            print "import object {0}".format(model)
-            setattr(self, 'model', model)
-        except Exception as ex:
-            app_log.error(ex)
-            print ex
-            raise tornado.web.HTTPError(404)
-        print 'revice request args: {0} kwargs: {1}'.format(args, kwargs)
-        return func(self, **kwargs)
     return wrapper
 
 class BackboneHandler(tornado.web.RequestHandler):
 
+	'''
+	HTTP GET
+		url_root/{model}/{uuid}
+		url_root/{model}
+	HTTP POST
+		url_root/{mode}  data=model
+	HTTP DELETE
+		url_root/{mode}/{uuid}
+	HTTP POST
+		url_root/{mode}/{uuid} data=update_model
+	'''
 	def initialize(self, auth= False):
 		self.auth = auth
 
@@ -68,20 +60,17 @@ class BackboneHandler(tornado.web.RequestHandler):
 		return json.loads(data)
 
 	def get(self, *args):
-		self.add_header('content-type', 'application/json')
 		if self.is_get_collection(*args):
 			self.write(self.encode(self.get_collection(*args)))
 		else:
 			self.write(self.encode(self.get_model(*args)))
 
 	def post(self, *args):
-		obj = self.decode(self.request.body)
-		resp = self.encode(self.create_model(obj=obj, *args))
+		resp = self.encode(self.create_model(*args))
 		self.write(resp)
 
 	def put(self, *args):
-		obj = self.decode(self.request.body)
-		resp = self.encode(self.update_model(obj=obj, *args))
+		resp = self.encode(self.update_model(*args))
 		self.write(resp)
 
 	def delete(self, *args):
@@ -90,7 +79,7 @@ class BackboneHandler(tornado.web.RequestHandler):
 	def is_get_collection(self, *args):
 		return len(args) == 1
 
-	def create_model(self, obj):
+	def create_model(self, obj, *args):
 		raise tornado.web.HTTPError(404)
 
 	def get_collection(self, *args):
@@ -99,10 +88,10 @@ class BackboneHandler(tornado.web.RequestHandler):
 	def get_model(self, *args):
 		raise tornado.web.HTTPError(404)
 
-	def update_model(self, obj):
+	def update_model(self, obj, *args):
 		raise tornado.web.HTTPError(404)
 
-	def delete_model(self, * args):
+	def delete_model(self, *args):
 		raise tornado.web.HTTPError(404)
 
 class MongoBackboneHandler(BackboneHandler):
@@ -130,19 +119,34 @@ class MongoBackboneHandler(BackboneHandler):
 	def get_collection(self, *args):
 		return self.model.objects()
 
-	@load_obj_model
-	def create_model(self, obj):
+	@load_model
+	def delete_model(self, *args):
+		try:
+			instance = self.model.objects(id=args[1])[0]
+			instance.delete()
+		except Exception, e:
+			raise e
+		else:
+			return instance
+
+	@load_model
+	def create_model(self, *args):
 		#print obj
+		obj = self.decode(self.request.body)
 		obj = self.model(**obj)
 		obj.save()
 		return obj
 
-	@load_obj_model
-	def update_model(self, obj):
-		oid = str(obj.get('_id').get("$oid"))
-		del obj['_id']
-		model = self.model.objects(id=oid)[0]
-		return model
+	@load_model
+	def update_model(self, *args):
+		obj = self.decode(self.request.body)
+		instance = self.model.objects(id=args[1])[0]
+		for key in obj:
+			print key
+			if hasattr(instance, key):
+				setattr(instance, key, obj[key])
+		instance.save()
+		return instance
 
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
