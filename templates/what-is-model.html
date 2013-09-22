@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="{{ static_url("lib/jquery.js") }}"></script>
+    <script type="text/javascript" src="{{ static_url("lib/underscore.js") }}"></script>
+    <script type="text/javascript" src="{{ static_url("lib/backbone.js") }}"></script>
+    <script type="text/javascript">
+
+        var UserModel = Backbone.Model.extend({
+            idAttribute: "_id",
+            urlRoot: 'api/user',
+            defaults: {
+                name: '',
+                email: ''
+            }
+        });
+
+        //Create Model
+        /*var user = new UserModel();*/
+        // Notice that we haven't set an `id`
+        /*var userDetails = {
+            name: 'zhengyl',
+            email: 'zhengyl@gmail.com'
+        };*/
+        // Because we have not set a `id` the server will call
+        // POST /user with a payload of {name:'Thomas', email: 'thomasalwyndavis@gmail.com'}
+        // The server should save the data and return a response containing the new `id`
+        /*user.save(userDetails, {
+            success: function (user) {
+                console.log('success save user');
+                console.log(user.toJSON());
+            }
+        });*/
+
+      //GET Model
+      var user = new UserModel({_id:'523e9eb8dc26652fc800db96'});
+
+      user.fetch({
+        success:function(user){
+          console.log('get model success');
+          console.log(user.toJSON())
+        }
+      });
+
+      //Updating a model
+      user.save({'name': 'Because of me'},{
+
+        success: function(model){
+            console.log('success update user!')
+            console.log(model.toJSON());
+        }
+
+      });
+
+      //DELETE MODEL
+      user.destroy({
+        success: function () {
+            alert('Destroyed');
+        }
+      });
+
+
+    </script>
+  </head>
+  <body>
+    
+  </body>
+</html>
