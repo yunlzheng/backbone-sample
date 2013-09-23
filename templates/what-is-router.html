@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/static/lib/jquery.js"></script>
+    <script type="text/javascript" src="/static/lib/underscore.js"></script>
+    <script type="text/javascript" src="/static/lib/backbone.js"></script>
+    <script type="text/javascript">
+
+      // What is router
+      var AppRouter = Backbone.Router.extend({
+
+        routes:{
+          "posts/:id": "getPost",//Dynamic Routing ":params"
+          //#/posts/121
+
+          "download/*path": "downloadFile",//Dynamic Routing "*splats"
+
+          //#/download/user/images/hey.gif
+          ":route/:action": "loadView"
+          //#dashbord/graph
+          //"*actions": "defaultRoute" //matchs http://example.com/#anythis-here
+        }
+
+      });
+
+      var app_router = new AppRouter();
+
+      app_router.on('route:getPost', function(id){
+
+        alert('Get post number '+ id);
+
+      });
+
+      app_router.on('route:downloadFile', function(path){
+
+        alert(path)
+
+      });
+
+      app_router.on('route:loadView', function(route, action){
+
+        alert(route + "_" + action);
+
+      });
+
+      /*app_router.on('route:defaultRoute', function(actions){
+
+        alert(actions);
+
+      });*/
+
+      Backbone.history.start();
+
+    </script>
+  </head>
+  <body>
+    <a href="#action">Active route</a>
+    <br/>
+    <a href="#/route/action">Active another route</a>
+    <br/>
+    <a href="#/posts/120">Post 120</a>
+    <br/>
+    <a href="#/posts/123">Post 123</a>
+    <br/>
+    <a href="#/dashbord/graph">dashbord graph</a>
+    <br/>
+    <a href="#/dashbord/main">dashbord main</a>
+   <!--  <br/>
+    <a href="#posts/123">posts_123</a> -->
+  </body>
+</html>

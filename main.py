@@ -150,7 +150,7 @@ class MongoBackboneHandler(BackboneHandler):
 
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
-		self.render("what-is-view.html");
+		self.render("what-is-router.html");
 
 settings = dict(
     template_path=TEMPLATE_DIR,
