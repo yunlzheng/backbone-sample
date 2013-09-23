@@ -3,12 +3,17 @@ model表示与数据库Coolection向映射的ORM对象（MongoDB），ORM使用m
 
 ##添加API接口
 创建文件example.py,并写入一下内容
->class Example(Document):
->   ****
+
+
+class Example(Document):
+    field1 = StringField()
+    field2 = StringField()
+
+
 修改__init__.py文件
 添加一行
->from .example import Example as example
 
+from .example import Example as example
 
 重启应用程序
 get rootUrl/api/example 获取所有的example对象
