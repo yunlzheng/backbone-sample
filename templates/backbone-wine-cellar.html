@@ -50,6 +50,7 @@
 
       // Models
       var Wine = Backbone.Model.extend({
+        urlRoot:'/api/wine',
         defaults: {
           'name':'',
           'grapes':'',
@@ -62,7 +63,6 @@
         parse: function(response){
             response.id = response._id.$oid;
             delete response._id
-            //console.log(response);
             return response;
         }
       });
@@ -111,7 +111,9 @@
      var WineView = Backbone.View.extend({
 
         template: _.template($("#tpl-wine-details").html()),
-
+        initialize: function(){
+          this.listenTo(this.model, 'sync', this.render);
+        },
         render: function(eventName) {
           $(this.el).html(this.template(this.model.toJSON()));
           return this;
@@ -126,20 +128,23 @@
           "wines/:id": 'wineDetails'
         },
         initialize:function(){
-            console.log("initialize");
+
+            this.winelist = new WineCollection();
+             this.winelist.fetch();
+            this.wineListView = new WineListView({model: this.winelist});
+            $('#sidebar').html( this.wineListView.el );
 
         },
         list:function(){
-
-          this.winelist = new WineCollection();
-          this.winelist.fetch();
-          this.wineListView = new WineListView({model: this.winelist});
-          $('#sidebar').html( this.wineListView.el );
 
         },
         wineDetails:function(id){
 
           this.wine = this.winelist.get(id);
+          if(this.wine==undefined){
+            this.wine = new Wine({id:id});
+            this.wine.fetch();
+          }
           this.wineView = new WineView({model: this.wine});
           var el = this.wineView.render().el;
           $('#content').html( el );
