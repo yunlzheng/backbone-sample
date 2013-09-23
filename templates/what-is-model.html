@@ -61,6 +61,36 @@
         }
       });
 
+      /*****************************************Tips and Tricks******************************************/
+
+       Person = Backbone.Model.extend({
+          //Validate data before you set or save it
+          // If you return a string from the validate function,
+          // Backbone will throw an error
+          validate: function( attributes ){
+              if( attributes.age < 0 && attributes.name != "Dr Manhatten" ){
+                  return "You can't be negative years old";
+              }
+          },
+          initialize: function(){
+              alert("Welcome to this world");
+              this.bind("error", function(model, error){
+                  // We have received an error, log it, alert it or forget it :)
+                  alert( error );
+              });
+          }
+      });
+      
+      var person = new Person;
+      person.set({ name: "Mary Poppins", age: -1 }); 
+      // Will trigger an alert outputting the error
+      person.on("invalid", function(model, error) {
+        alert(model.get("name") + " " + error);
+      });
+
+      var person = new Person;
+      person.set({ name: "Dr Manhatten", age: 10 });
+      // God have mercy on our souls
 
     </script>
   </head>

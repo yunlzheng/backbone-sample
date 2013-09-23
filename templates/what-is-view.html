@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/static/lib/jquery.js"></script>
+    <script type="text/javascript" src="/static/lib/underscore.js"></script>
+    <script type="text/javascript" src="/static/lib/backbone.js"></script>
+  </head>
+  <body>
+    <script type="text/template" id="search_template">
+      <label><%= search_label %></label>
+      <input type="text" id="search_input"/>
+      <input type="button" id="search_button" value="Search"/>
+    </script>
+    <div id="search_container"></div>
+    <script type="text/javascript">
+
+       //What is View?
+       SearchView = Backbone.View.extend({
+
+        initialize: function(){
+          this.render();
+        },
+        render:function(){
+          //Loading a template
+          var variables = { search_label: "My Search" };
+          var template = _.template( $("#search_template").html(), variables );
+          this.$el.html( template );
+        },
+        events:{
+          //Listening for events
+          "click input[type=button]": "doSearch"
+
+        },
+        doSearch: function( event ){
+          alert("Search for " + $("#search_input").val() )
+        }
+
+       });
+
+       //The el poperty
+       //The "el" proerty references the dom object created in browser
+       var search_view = new SearchView({ el: $("#search_container") });
+
+    </script>
+  </body>
+</html>
