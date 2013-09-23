@@ -124,13 +124,12 @@
       var AppRouter = Backbone.Router.extend({
 
         routes:{
-          "": "list",
           "wines/:id": 'wineDetails'
         },
         initialize:function(){
 
             this.winelist = new WineCollection();
-             this.winelist.fetch();
+            this.winelist.fetch();
             this.wineListView = new WineListView({model: this.winelist});
             $('#sidebar').html( this.wineListView.el );
 
