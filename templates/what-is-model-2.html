@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="{{ static_url("lib/jquery.js") }}"></script>
+    <script type="text/javascript" src="{{ static_url("lib/underscore.js") }}"></script>
+    <script type="text/javascript" src="{{ static_url("lib/backbone.js") }}"></script>
+    <script type="text/javascript">
+
+        var WineModel = Backbone.Model.extend({
+
+            urlRoot:'/api/wine',
+            defaults: {
+              'name':'',
+              'grapes':'',
+              'country':'',
+              'region':'',
+              'year':'',
+              'notes':''
+            },
+            parse: function(response){
+              response.id = response._id.$oid;
+              delete response._id
+              return response;
+            },
+            initialize: function(){
+
+            }
+        });
+
+      /*  var wine = new WineModel({_id: "523fc516dc26651d8aa949ee"});
+        wine.fetch({
+          success: function(response, args2){
+
+
+          }
+        });
+
+        wine.save({name:'Tomas',country:'China', region: 'sichuan', year: '1234', notes:'too long'},{
+
+          success:function(collection, response){
+            console.log(collection);
+            console.log(response);
+          }
+
+        });*/
+
+      var WineCollection = Backbone.Collection.extend({
+
+        url:'/api/wine',
+        model: WineModel
+
+      });
+
+      var wines =new WineCollection();
+      wines.fetch({
+        success: function(collection, response){
+
+          console.log(collection);
+          console.log(wines.toJSON());
+
+        }
+      });
+
+
+
+    </script>
+  </head>
+  <body>
+
+  </body>
+</html>

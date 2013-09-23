@@ -35,7 +35,7 @@
         });*/
 
       //GET Model
-      var user = new UserModel({_id:'523e9eb8dc26652fc800db96'});
+      var user = new UserModel({_id:'523fd413dc26651fdf2e7afe'});
 
       user.fetch({
         success:function(user){
@@ -61,6 +61,13 @@
         }
       });
 
+      user2 = new UserModel();
+      user2.fetch({
+        success:function(data){
+          console.log(data);
+        }
+      });
+
       /*****************************************Tips and Tricks******************************************/
 
        Person = Backbone.Model.extend({
@@ -80,9 +87,9 @@
               });
           }
       });
-      
+
       var person = new Person;
-      person.set({ name: "Mary Poppins", age: -1 }); 
+      person.set({ name: "Mary Poppins", age: -1 });
       // Will trigger an alert outputting the error
       person.on("invalid", function(model, error) {
         alert(model.get("name") + " " + error);
@@ -95,6 +102,6 @@
     </script>
   </head>
   <body>
-    
+
   </body>
 </html>

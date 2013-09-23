@@ -60,6 +60,7 @@ class BackboneHandler(tornado.web.RequestHandler):
 		return json.loads(data)
 
 	def get(self, *args):
+		self.set_header("Content-Type", "application/json; charset=UTF-8")
 		if self.is_get_collection(*args):
 			self.write(self.encode(self.get_collection(*args)))
 		else:
@@ -97,13 +98,7 @@ class BackboneHandler(tornado.web.RequestHandler):
 class MongoBackboneHandler(BackboneHandler):
 
 	def encode(self,data):
-		resp = {}
-		if isinstance(data, self.model):
-			resp = data.to_json()
-		else:
-			resp = [obj.to_json() for obj in data]
-			resp = json.dumps(resp)
-		return resp
+		return data.to_json()
 
 	@load_model
 	def get_model(self, *args):
@@ -150,7 +145,7 @@ class MongoBackboneHandler(BackboneHandler):
 
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
-		self.render("what-is-router.html");
+		self.render("backbone-wine-cellar.html");
 
 settings = dict(
     template_path=TEMPLATE_DIR,

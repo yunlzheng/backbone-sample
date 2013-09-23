@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/static/lib/jquery.js"></script>
+    <script type="text/javascript" src="/static/lib/underscore.js"></script>
+    <script type="text/javascript" src="/static/lib/backbone.js"></script>
+    <link rel="stylesheet" href="/static/css/backbone-wine-cellar.css" />
+  </head>
+  <body>
+
+    <div id="header"><span class="title">Backbone Cellar</span></div>
+
+    <div id="sidebar"></div>
+
+    <div id="content">
+      <h2>Welcome to Backbone Cellar</h2>
+      <p>
+      This is a sample application part of of three-part tutorial showing how to build a CRUD application with Backbone.js.
+      </p>
+    </div>
+
+    <script type="text/template" id="tpl-wine-list-item">
+      <a href='#wines/<%= id %>'><%= name %></a>
+    </script>
+
+    <script type="text/template" id="tpl-wine-details">
+      <div class="form-left-col">
+          <label>Id:</label>
+          <input type="text" id="wineId" name="id" value="<%= id %>" disabled />
+          <label>Name:</label>
+          <input type="text" id="name" name="name" value="<%= name %>" required/>
+          <label>Grapes:</label>
+          <input type="text" id="grapes" name="grapes" value="<%= grapes %>"/>
+          <label>Country:</label>
+          <input type="text" id="country" name="country" value="<%= country %>"/>
+          <label>Region:</label>
+          <input type="text" id="region" name="region"  value="<%= region %>"/>
+          <label>Year:</label>
+          <input type="text" id="year" name="year"  value="<%= year %>"/>
+      </div>
+      <div class="form-right-col">
+          <label>Notes:</label>
+          <textarea id="description" name="description"><%= description %></textarea>
+      </div>
+   </script>
+
+   <script type="text/javascript">
+
+      // Models
+      var Wine = Backbone.Model.extend({
+        defaults: {
+          'name':'',
+          'grapes':'',
+          'country':'',
+          'region':'',
+          'year':'',
+          'notes':'',
+          'description':'nothing'
+        },
+        parse: function(response){
+            response.id = response._id.$oid;
+            delete response._id
+            //console.log(response);
+            return response;
+        }
+      });
+
+      var WineCollection = Backbone.Collection.extend({
+        model : Wine,
+        url:'/api/wine'
+      });
+
+      var WineListView = Backbone.View.extend({
+
+        tagName: 'ul',
+        className: 'wine-sidebar',
+        initialize: function(){
+
+          //this.model.bind("sync", this.render, this);
+          this.listenTo(this.model, 'sync', this.render);
+
+        },
+        render:function(eventName){
+          console.log(eventName)
+          _.each(this.model.models, function(wine){
+
+              $(this.el).append(new WineListItemView({model: wine}).render().el)
+
+          },this);
+          return this
+        }
+
+      });
+
+     var WineListItemView = Backbone.View.extend({
+
+        tagName:'li',
+        template:_.template($("#tpl-wine-list-item").html()),
+        render: function(){
+
+          this.$el.html(this.template(this.model.toJSON()));
+          return this
+
+        }
+
+      });
+
+
+     var WineView = Backbone.View.extend({
+
+        template: _.template($("#tpl-wine-details").html()),
+
+        render: function(eventName) {
+          $(this.el).html(this.template(this.model.toJSON()));
+          return this;
+        }
+
+     });
+
+      var AppRouter = Backbone.Router.extend({
+
+        routes:{
+          "": "list",
+          "wines/:id": 'wineDetails'
+        },
+        initialize:function(){
+            console.log("initialize");
+
+        },
+        list:function(){
+
+          this.winelist = new WineCollection();
+          this.winelist.fetch();
+          this.wineListView = new WineListView({model: this.winelist});
+          $('#sidebar').html( this.wineListView.el );
+
+        },
+        wineDetails:function(id){
+
+          this.wine = this.winelist.get(id);
+          this.wineView = new WineView({model: this.wine});
+          var el = this.wineView.render().el;
+          $('#content').html( el );
+
+        }
+      });
+
+      var appRouter = new AppRouter();
+
+      Backbone.history.start();
+
+    </script>
+  </body>
+</html>
