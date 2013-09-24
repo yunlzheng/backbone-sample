@@ -145,7 +145,11 @@ class MongoBackboneHandler(BackboneHandler):
 
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
-		self.render("backbone-wine-cellar.html");
+		self.render("index.html");
+
+class AppsHandler(tornado.web.RequestHandler):
+	def get(self, name):
+		self.render(name+".html")
 
 settings = dict(
     template_path=TEMPLATE_DIR,
@@ -158,6 +162,7 @@ connect('test', host="mongodb://localhost:27017")
 
 application = tornado.web.Application([
 	(r"/", MainHandler),
+	(r"/example/(.+)", AppsHandler),
 	(r"/api/([a-z]+)", MongoBackboneHandler),
     (r"/api/([a-z]+)/(.+)", MongoBackboneHandler),
 ], **settings)
