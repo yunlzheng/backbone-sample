@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+  <div id="todo">
+    <input type="checkbox" />
+  </div>
+
+  <script type="text/javascript" src="/static/lib/jquery.js"></script>
+  <script type="text/javascript" src="/static/lib/underscore.js"></script>
+  <script type="text/javascript" src="/static/lib/backbone.js"></script>
+  <script type="text/javascript">
+
+    <!-- Models -->
+    var Todo = Backbone.Model.extend({
+      defaults: {
+        title: '',
+        completed: false
+      },
+      parse: function(response){
+            response.id = response._id.$oid;
+            delete response._id
+            return response;
+      },
+      urlRoot: '/api/todo'
+    });
+
+    var TodosCollection = Backbone.Collection.extend({
+      model: Todo,
+      url: '/api/todo'
+    });
+
+    var View = Backbone.View.extend({
+
+      el: "#todo",
+
+      events: {
+        'click [type="checkbox"]': 'clicked'
+      },
+
+      initialize: function () {
+        //bind to DOM event using jquery
+        this.$el.click(this.jqueryClicked);
+        this.on('apiEvent', this.callback);
+
+      },
+
+      clicked: function(event) {
+        console.log('event handler for ' + this.el.outerHTML);
+        this.trigger('apiEvent', event.type);
+      },
+
+      jqueryClicked: function(event) {
+        console.log("jquery handler for " + this.outerHTML);
+      },
+
+      callback: function(eventType) {
+        console.log("event type was " + eventType);
+      }
+
+    });
+
+    var view = new View();
+
+    var todos = new TodosCollection();
+    todos.fetch({
+      success: function(collection, response){
+        console.log('fetch collection success!!!');
+        console.log(todos.toJSON());
+      }
+    });
+
+    // Saving models to the server
+    // the save method 1
+    /**
+      As mentioned earlier, a model’s validate() method is called automatically by save() and will trigger an invalid event on the model if validation fails.
+    */
+    /*
+      var todo = new Todo({title:'go fishing!'});
+      todo.save();
+    */
+
+
+    // the save method 2
+    /*
+    todos.create({title: 'Try out code samples'});
+    */
+
+    // Deleting models from the server
+    /*var todo2 = new Todo({ id: "5242e42edc266514c8e64d39"});
+    todo2.fetch();
+    todo2.destroy();*/
+
+    Backbone.on('event', function() { console.log('Handled Backbone event')});
+
+    Backbone.trigger('event');
+
+  </script>
+  </body>
+</html>

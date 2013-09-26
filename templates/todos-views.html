@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+  <div id="todo">
+  </div>
+  <script type="text/template" id="item-template">
+    <div>
+      <input id="todo_complete" type="checkbox" <%= completed ? 'checked="checked"' : '' %>>
+      <%= title %>
+    </div>
+  </script>
+  <script type="text/javascript" src="/static/lib/jquery.js"></script>
+  <script type="text/javascript" src="/static/lib/underscore.js"></script>
+  <script type="text/javascript" src="/static/lib/backbone.js"></script>
+  <script type="text/javascript">
+
+  var ListView = Backbone.View.extend({
+
+    template: _.template(''),
+
+    render: function() {
+      this.$el.html(this.template(this.model.attributes));
+      return this;
+    }
+
+  });
+
+  var ItemView = Backbone.View.extend({
+    events: {},
+    render: function() {
+      this.$el.html(this.template(this.model.attributes));
+      return this;
+    }
+  });
+
+  </script>
+  </body>
+</html>

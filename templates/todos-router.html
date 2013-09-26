@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>basic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+  <div id="todo">
+    <input type="checkbox" />
+  </div>
+
+  <script type="text/javascript" src="/static/lib/jquery.js"></script>
+  <script type="text/javascript" src="/static/lib/underscore.js"></script>
+  <script type="text/javascript" src="/static/lib/backbone.js"></script>
+  <script type="text/javascript">
+
+    var TodoRouter = Backbone.Router.extend({
+
+      routes: {
+        "about": "showAbout",
+        "todo/:id": "getTodo",
+        "search/:query": "searchTodos",
+        "search/:query/p:page": "searchTodos",
+        "todos/:id/download/*documentPath": "downDocument",
+        "*other": "defaultRoute",
+        "optional(/:item)": "optionalItem",
+        "named/optional/(y:z)": "nameOptionalItem"
+      },
+
+      showAbout: function(){
+
+      },
+
+      getTodo: function(id){
+          /*
+          Note that the id matched in the above route will be passed to this function
+          */
+          console.log("You are trying to reach todo " + id);
+      },
+
+      searchTodos: function(query, page){
+          var page_number = page || 1;
+          console.log("Page number: " + page_number + " of the results for todos containing the word: " + query);
+      },
+
+      downloadDocument: function(id, path){
+      },
+
+      defaultRoute: function(other){
+          console.log('Invalid. You attempted to reach:' + other);
+      }
+
+    });
+
+  </script>
+  </body>
+</html>
